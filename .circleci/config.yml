@@ -53,10 +53,10 @@ jobs:
             ls -ltr . ; pwd
                  export DOCKER_BUILDKIT=1
                  docker build --rm=false -t img-pipeline_workflows:latest .
-                 - run:
-                     name: Save Docker image
-                     command: |
-                       docker save -o img-pipeline_workflows
+           - run:
+               name: Save Docker image
+               command: |
+                 docker save -o img-pipeline_workflows
            - run:
                name: Test Pipeline Workflow DAG
                command: |
