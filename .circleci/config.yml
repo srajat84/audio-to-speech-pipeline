@@ -51,8 +51,8 @@ jobs:
           name: Build Image
           command: |
             ls -ltr . ; pwd
-                 export DOCKER_BUILDKIT=1
-                 docker build --rm=false -t img-pipeline_workflows:latest .
+            export DOCKER_BUILDKIT=1
+            docker build --rm=false -t img-pipeline_workflows:latest .
            - run:
                name: Save Docker image
                command: |
