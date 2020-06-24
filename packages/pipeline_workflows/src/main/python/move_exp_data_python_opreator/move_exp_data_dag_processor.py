@@ -14,22 +14,23 @@ class mydict(dict):
         return json.dumps(self)
 
 
-def get_variables():
-    global source_chunk_path
-    global bucket_name
-    global archive_utterances_path
-    global integration_processed_path
-    global experiment_output
-    source_chunk_path = Variable.get("utteranceschunkpath")
-    archive_utterances_path = Variable.get("archiveutterancespath")
-    integration_processed_path = Variable.get("integrationprocessedpath")
-    experiment_output = Variable.get("experimentoutput")
-    bucket_name = Variable.get("bucket")
+# def get_variables():
+#     # global source_chunk_path
+#     # global bucket_name
+#     global archive_utterances_path
+#     global integration_processed_path
+#     global experiment_output
+#     # source_chunk_path = Variable.get("utteranceschunkpath")
+#     archive_utterances_path = Variable.get("archiveutterancespath")
+#     integration_processed_path = Variable.get("integrationprocessedpath")
+#     experiment_output = Variable.get("experimentoutput")
+#     # bucket_name = Variable.get("bucket")
 
 
-def count_utterances_file_chunks(**kwargs):
-    get_variables()
-    utterances_names = json.loads(Variable.get("utteranceschunkslist"))
+def count_utterances_file_chunks(utterances_names,bucket_name, source_chunk_path, **kwargs):
+    # print(kwargs['key1'])
+    # print(kwargs['key2'])
+    # utterances_names = json.loads(Variable.get("utteranceschunkslist"))
     all_blobs = list_blobs_in_a_path(bucket_name, source_chunk_path)
     list_of_blobs = []
     for blob in all_blobs:
@@ -41,16 +42,16 @@ def count_utterances_file_chunks(**kwargs):
     Variable.set("utteranceschunkslist", utterances_names)
 
 
-def move_utterance_chunk(bucket_name, source_file_name, experiment_name):
-    get_variables()
+def move_utterance_chunk(bucket_name, source_file_name, experiment_name,archive_utterances_path):
+    # get_variables()
     archive_utterances_file_name = archive_utterances_path + experiment_name + "/" + source_file_name.split('/')[
         -1]
     move_blob(bucket_name, source_file_name, bucket_name, archive_utterances_file_name)
     # os.remove(local_file_name)
 
 
-def copy_utterances(src_file_name, **kwargs):
-    get_variables()
+def copy_utterances(src_file_name,bucket_name,experiment_output,integration_processed_path,archive_utterances_path, **kwargs):
+    # get_variables()
     extn_list = ['wav', 'txt']
     local_file_name = bucket_name.split('/')[-1]
     download_blob(bucket_name, src_file_name, local_file_name)
@@ -73,7 +74,7 @@ def copy_utterances(src_file_name, **kwargs):
                 destination_bucket_name=bucket_name,
                 destination_blob_name=destination_blob_name,
             )
-    move_utterance_chunk(bucket_name, src_file_name, experiment_name)
+    move_utterance_chunk(bucket_name, src_file_name, experiment_name,archive_utterances_path)
 
 
 

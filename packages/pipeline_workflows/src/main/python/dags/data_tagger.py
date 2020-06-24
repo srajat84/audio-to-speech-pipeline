@@ -7,7 +7,8 @@ from airflow.models import Variable
 from airflow.contrib.kubernetes import secret
 from airflow.contrib.operators import kubernetes_pod_operator
 from airflow.operators.python_operator import PythonOperator
-from move_exp_data_dag_processor import count_utterances_file_chunks, copy_utterances
+from ..move_exp_data_python_opreator  import count_utterances_file_chunks, copy_utterances
+# from ../ move_exp_data_dag_processor import count_utterances_file_chunks, copy_utterances
 
 
 default_args = {
@@ -33,6 +34,18 @@ dag_number = dag_id
 #           schedule_interval=datetime.timedelta(days=1),
 #           default_args=default_args,
 #           start_date=YESTERDAY)
+
+def get_variables():
+    global source_chunk_path
+    global bucket_name
+    global archive_utterances_path
+    global integration_processed_path
+    global experiment_output
+    source_chunk_path = Variable.get("utteranceschunkpath")
+    archive_utterances_path = Variable.get("archiveutterancespath")
+    integration_processed_path = Variable.get("integrationprocessedpath")
+    experiment_output = Variable.get("experimentoutput")
+    bucket_name = Variable.get("bucket")
 
 dag =  models.DAG(
         dag_id,
@@ -69,11 +82,13 @@ with dag:
         image='us.gcr.io/ekstepspeechrecognition/data_tagger:1.0.0',
         image_pull_policy='Always')
 
-
+    get_variables()
+    utterances_names = json.loads(Variable.get("utteranceschunkslist"))
     count_utterances_chunks_list = PythonOperator(
         task_id=dag_id + "_count_utterances_file_chunks",
         python_callable=count_utterances_file_chunks,
-        op_kwargs={'source': dag_id},
+        provide_context=True,
+        op_kwargs={'utterances_names':utterances_names,'bucket_name':bucket_name,'source_chunk_path':source_chunk_path,'source': dag_id},
         dag_number=dag_number)
 
     kubernetes_list_bucket_pod >> count_utterances_chunks_list
@@ -90,7 +105,7 @@ with dag:
             copy_utterance_files = PythonOperator(
                 task_id=dag_id + "_copy_utterances_" + str(index),
                 python_callable=copy_utterances,
-                op_kwargs={'src_file_name': utterances_chunk},
+                op_kwargs={'src_file_name': utterances_chunk,'bucket_name':bucket_name,'experiment_output':experiment_output,'integration_processed_path':integration_processed_path,'archive_utterances_path':archive_utterances_path},
                 dag_number=dag_number)
             count_utterances_chunks_list >> copy_utterance_files
     
