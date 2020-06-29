@@ -5,6 +5,7 @@ from os.path import isfile, join
 from google.cloud import storage
 import datetime
 
+os.environ['GOOGLE_APPLICATION_CREDENTIALS']="/Users/soujyo.sen/ekstepspeechrecognition-532504f2d2c1-composer.json"
 
 class CloudStorageOperations():
 
@@ -16,16 +17,14 @@ class CloudStorageOperations():
         print("*******src_files***",src,src_files,audio_extn)
         for file_name in src_files:
             meta_file_name = '/'.join(file_name.split('/')[:-1]) + '/' + file_name.split('/')[-1].split('.')[0] + '.csv'
-            full_meta_file_name = os.path.join(src, meta_file_name)
-            full_file_name = os.path.join(src, file_name)
-            print("*******full_meta_file_name****", full_meta_file_name)
-            print("*******full_file_name****", full_file_name)
-            if os.path.isfile(full_file_name) and os.path.isfile(full_meta_file_name):
+            print("*******full_meta_file_name****", meta_file_name)
+            print("*******full_file_name****", file_name)
+            if os.path.isfile(file_name) and os.path.isfile(meta_file_name):
                 destination = dest + '/' + self.get_audio_id()
                 self.make_directories(destination)
                 print("****dest***",destination)
-                shutil.copy(full_file_name, destination)
-                shutil.copy(full_meta_file_name, destination)
+                shutil.copy(file_name, destination)
+                shutil.copy(meta_file_name, destination)
 
     def get_audio_id(self):
         return datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')[:-2]
