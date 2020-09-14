@@ -48,7 +48,7 @@ parser.add_argument('-af', '--audio-format', dest='audio_format', default=None,
 parser.add_argument('-stt', '--speech-to-text',dest='speech_to_text_client',default=None,
                     help='The client name which we want to call for stt')
 
-parser.add_argument('-fb', '--filter_by',dest='filter_by',default=None,
+parser.add_argument('-fb', '--filter_by', dest='filter_by', default=None,
                     help='The filter that needs to be applied for data marking')
 
 processor_args = parser.parse_args()
