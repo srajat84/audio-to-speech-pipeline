@@ -6,7 +6,7 @@ from airflow.models import Variable
 from airflow.contrib.kubernetes import secret
 from airflow.contrib.operators import kubernetes_pod_operator
 from airflow.operators.python_operator import PythonOperator
-from helper_dag import data_marking_done
+from helper_dag import data_marking_start
 
 data_marker_config = json.loads(Variable.get("data_filter_config"))
 bucket_name = Variable.get("bucket")
@@ -28,11 +28,13 @@ def create_dag(data_marker_config, default_args):
               start_date=YESTERDAY)
 
     with dag:
-        after_completed = PythonOperator(
-            task_id= "data_marking_done",
+        before_start = PythonOperator(
+            task_id= "data_marking_start",
             python_callable=data_marking_done,
             op_kwargs={},
             )
+
+        before_start
 
         for source in data_marker_config.keys():
             filter_by_config = data_marker_config.get(source)
@@ -47,7 +49,7 @@ def create_dag(data_marker_config, default_args):
                 image='us.gcr.io/ekstepspeechrecognition/ekstep_data_pipelines:1.0.0',
                 image_pull_policy='Always')
 
-            data_marker_task >> after_completed
+            before_start >> data_marker_task
 
     return dag
 
