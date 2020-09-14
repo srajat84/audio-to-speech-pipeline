@@ -43,11 +43,10 @@ class DataMarker:
         Main function for running all processing that takes places in the data marker
         """
         Logger.info('*************Starting data marker****************')
-        self.data_tagger_config = self.postgres_client.config_dict.get(
-            CONFIG_NAME)
 
-        filter_criteria = self.data_tagger_config.get(FILTER_CRITERIA)
-        source = filter_criteria.get('by_source', None)
+        filter_criteria = kwargs.get(FILTER_CRITERIA, {})
+        source = kwargs.get('source')
+
         if source is None:
             raise Exception('filter by source is mandatory')
         Logger.info("Fetching utterances for source:" + source)
