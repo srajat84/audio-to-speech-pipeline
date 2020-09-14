@@ -42,7 +42,7 @@ def create_dag(data_marker_config, default_args):
                 task_id=f'data-marker-{source}',
                 name='data-marker',
                 cmds=["python", "invocation_script.py" ,"-a", "data_marking", "-rc", "data/audiotospeech/config/audio_processing/config.yaml",
-                      "-as", source, "-fb", filter_by_config],
+                      "-as", source, "-fb", json.dumps(filter_by_config)],
                 namespace = composer_namespace,
                 startup_timeout_seconds=300,
                 secrets=[secret_file],
@@ -58,4 +58,4 @@ dag_args = {
         'email': ['gaurav.gupta@thoughtworks.com'],
     }
 
-create_dag(data_marker_config, dag_args)
+globals()['data_marker_pipeline'] = create_dag(data_marker_config, dag_args)
