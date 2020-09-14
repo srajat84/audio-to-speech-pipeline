@@ -44,13 +44,13 @@ class DataMarker:
         Main function for running all processing that takes places in the data marker
         """
         Logger.info('*************Starting data marker****************')
+        self.data_tagger_config = self.postgres_client.config_dict.get(CONFIG_NAME)
         source, filter_criteria = self.get_config(**kwargs)
         Logger.info("Fetching utterances for source:" + source)
         utterances = self.catalogue_dao.get_utterances_by_source(source, 'Clean')
         filtered_utterances = self.data_filter.apply_filters(filter_criteria, utterances)
         Logger.info("updating utterances that need to be staged, count=" + str(len(filtered_utterances)))
         self.catalogue_dao.update_utterances_staged_for_transcription(filtered_utterances)
-
         landing_path_with_source = f'{self.data_tagger_config.get(LANDING_BASE_PATH)}/{source}'
         source_path_with_source = f'{self.data_tagger_config.get(SOURCE_BASE_PATH)}/{source}'
         files = self.to_files(filtered_utterances, source_path_with_source)
