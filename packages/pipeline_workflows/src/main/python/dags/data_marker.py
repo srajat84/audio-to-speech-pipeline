@@ -58,4 +58,4 @@ dag_args = {
         'email': ['gaurav.gupta@thoughtworks.com'],
     }
 
-create_dag(data_marker_config, dag_args)
+globals()['data_marker_pipeline'] = create_dag(data_marker_config, dag_args)
