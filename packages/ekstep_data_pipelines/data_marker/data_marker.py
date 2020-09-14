@@ -43,12 +43,7 @@ class DataMarker:
         Main function for running all processing that takes places in the data marker
         """
         Logger.info('*************Starting data marker****************')
-
-        filter_criteria = kwargs.get(FILTER_CRITERIA, {})
-        source = kwargs.get('source')
-
-        if source is None:
-            raise Exception('filter by source is mandatory')
+        source, filter_criteria = self.get_config(**kwargs)
         Logger.info("Fetching utterances for source:" + source)
         utterances = self.catalogue_dao.get_utterances_by_source(source, 'Clean')
         filtered_utterances = self.data_filter.apply_filters(filter_criteria, utterances)
@@ -65,3 +60,12 @@ class DataMarker:
     def to_files(self, utterances, source_path_with_source):
         list(map(lambda u: f'{source_path_with_source}/{u[3]}/clean/{u[1]}', utterances))
         return list(map(lambda u: f'{source_path_with_source}/{u[3]}/clean/{u[1]}', utterances))
+
+    def get_config(self, **kwargs):
+        filter_criteria = kwargs.get(FILTER_CRITERIA, {})
+        source = kwargs.get('source')
+
+        if source is None:
+            raise Exception('filter by source is mandatory')
+
+        return source, filter_criteria

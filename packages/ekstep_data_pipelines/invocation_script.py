@@ -113,7 +113,7 @@ def validate_data_filter_config(arguments):
             f'Filter config is missing'
         )
 
-    return {'filter_by': json.loads(arguments.filter_by), 'source': arguments.audio_source}
+    return {'filter_by': arguments.filter_by, 'source': arguments.audio_source}
 
 
 def validate_audio_processing_input(arguments):

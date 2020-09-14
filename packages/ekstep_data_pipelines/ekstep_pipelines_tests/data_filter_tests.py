@@ -65,8 +65,8 @@ class DataMarkerTests(unittest.TestCase):
             (6, 'file_4.wav', 2, '2010126', 24)
         ]
         data_filter = DataFilter()
-        filtered1 = data_filter.by_duration(utterances, 7/3600, True, 1)
-        filtered2 = data_filter.by_duration(utterances, 7/3600, True, 1)
+        filtered1 = data_filter.by_duration(utterances, 7/3600, 'true', 1)
+        filtered2 = data_filter.by_duration(utterances, 7/3600, 'true', 1)
         expected_utterances = [
             (1, 'file_1.wav', 4, '2010123', 13),
             (2, 'file_2.wav', 2, '2010124', 11)
@@ -366,7 +366,7 @@ class DataMarkerTests(unittest.TestCase):
             'by_source': 'swayamprabha_chapter_30',
             'then_by_snr': {'gte': 13, 'lte': 26},
             'then_by_duration': 21,
-            'with_randomness': True
+            'with_randomness': "true"
         }
 
         expected_utterances = [
