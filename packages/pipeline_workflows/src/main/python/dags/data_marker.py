@@ -30,7 +30,7 @@ def create_dag(data_marker_config, default_args):
     with dag:
         before_start = PythonOperator(
             task_id= "data_marking_start",
-            python_callable=data_marking_done,
+            python_callable=data_marking_start,
             op_kwargs={},
             )
 
