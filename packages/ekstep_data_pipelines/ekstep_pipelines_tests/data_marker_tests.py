@@ -37,4 +37,11 @@ class DataMarkerTests(unittest.TestCase):
         kwargs = {"filter_by": filteg_config.get(key), "source": key}
         source, filter_criteria = self.data_stager.get_config(**kwargs)
         self.assertEqual(source, "swayamprabha_chapter_4")
-        self.assertEqual(filter_criteria, { "filter_by": { "then_by_snr": { "lte": 100, "gte": 15 }, "then_by_duration": 1, "with_randomness": "true"} })
+        self.assertEqual(filter_criteria, { "then_by_snr": { "lte": 100, "gte": 15 }, "then_by_duration": 1, "with_randomness": "true"} )
+
+        by_snr = filter_criteria.get('then_by_snr', None)
+        by_duration = filter_criteria.get('then_by_duration', None)
+        with_randomness = filter_criteria.get('with_randomness', 'false')
+
+        self.assertEqual(by_snr, { "lte": 100, "gte": 15 })
+        self.assertEqual(by_duration, 1)

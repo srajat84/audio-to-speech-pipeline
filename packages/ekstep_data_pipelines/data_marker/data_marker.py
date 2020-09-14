@@ -1,3 +1,4 @@
+import json
 import multiprocessing
 
 from common import CatalogueDao
@@ -68,4 +69,4 @@ class DataMarker:
         if source is None:
             raise Exception('filter by source is mandatory')
 
-        return source, filter_criteria
+        return source, filter_criteria.get(FILTER_CRITERIA)
