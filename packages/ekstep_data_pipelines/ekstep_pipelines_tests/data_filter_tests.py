@@ -186,7 +186,7 @@ class DataMarkerTests(unittest.TestCase):
 
         filters = {
             'by_source': 'swayamprabha_chapter_30',
-            'then_by_snr': {'gte': 13, 'lte': 26}
+            'by_snr': {'gte': 13, 'lte': 26}
         }
 
         expected_utterances = [
@@ -233,8 +233,8 @@ class DataMarkerTests(unittest.TestCase):
 
         filters = {
             'by_source': 'swayamprabha_chapter_30',
-            'then_by_snr': {'gte': 13, 'lte': 26},
-            'then_by_speaker': {'lte_per_speaker_duration': 8/60, 'gte_per_speaker_duration': 5/60, 'with_threshold': 0}
+            'by_snr': {'gte': 13, 'lte': 26},
+            'by_speaker': {'lte_per_speaker_duration': 8/60, 'gte_per_speaker_duration': 5/60, 'with_threshold': 0}
             # 'then_by_duration': 35
         }
 
@@ -279,9 +279,9 @@ class DataMarkerTests(unittest.TestCase):
 
         filters = {
             'by_source': 'swayamprabha_chapter_30',
-            'then_by_snr': {'gte': 13, 'lte': 26},
-            'then_by_speaker': {'lte_per_speaker_duration': 8/60, 'gte_per_speaker_duration': 5/60, 'with_threshold': 0},
-            'then_by_duration': 21/3600
+            'by_snr': {'gte': 13, 'lte': 26},
+            'by_speaker': {'lte_per_speaker_duration': 8/60, 'gte_per_speaker_duration': 5/60, 'with_threshold': 0},
+            'by_duration': 21/3600
         }
 
         expected_utterances = [
@@ -322,8 +322,8 @@ class DataMarkerTests(unittest.TestCase):
 
         filters = {
             'by_source': 'swayamprabha_chapter_30',
-            'then_by_snr': {'gte': 13, 'lte': 26},
-            'then_by_duration': 21/3600
+            'by_snr': {'gte': 13, 'lte': 26},
+            'by_duration': 21/3600
         }
 
         expected_utterances = [
@@ -364,8 +364,8 @@ class DataMarkerTests(unittest.TestCase):
 
         filters = {
             'by_source': 'swayamprabha_chapter_30',
-            'then_by_snr': {'gte': 13, 'lte': 26},
-            'then_by_duration': 21,
+            'by_snr': {'gte': 13, 'lte': 26},
+            'by_duration': 21,
             'with_randomness': "true"
         }
 
@@ -410,7 +410,7 @@ class DataMarkerTests(unittest.TestCase):
 
         filters = {
             'by_source': 'swayamprabha_chapter_30',
-            'then_by_duration': 21/3600
+            'by_duration': 21/3600
         }
 
         expected_utterances = [

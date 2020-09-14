@@ -30,11 +30,11 @@ class DataMarkerTests(unittest.TestCase):
         self.assertListEqual(files, expected_files)
 
     def test__should_parse_config(self):
-        data_marker_config = '{ "swayamprabha_chapter_4": { "filter_by": { "then_by_snr": { "lte": 100, "gte": 15 }, "then_by_duration": 1, "with_randomness": "true" } } }'
+        data_marker_config = '{ "swayamprabha_chapter_4": { "filter": { "then_by_snr": { "lte": 100, "gte": 15 }, "then_by_duration": 1, "with_randomness": "true" } } }'
 
         filteg_config = json.loads(data_marker_config)
         key = list(filteg_config.keys())[0]
-        kwargs = {"filter_by": filteg_config.get(key), "source": key}
+        kwargs = {"filter": filteg_config.get(key), "source": key}
         source, filter_criteria = self.data_stager.get_config(**kwargs)
         self.assertEqual(source, "swayamprabha_chapter_4")
         self.assertEqual(filter_criteria, { "then_by_snr": { "lte": 100, "gte": 15 }, "then_by_duration": 1, "with_randomness": "true"} )

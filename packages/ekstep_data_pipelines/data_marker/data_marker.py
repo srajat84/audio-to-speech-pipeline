@@ -1,4 +1,3 @@
-import json
 import multiprocessing
 
 from common import CatalogueDao

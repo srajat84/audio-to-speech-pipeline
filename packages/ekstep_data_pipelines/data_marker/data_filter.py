@@ -46,9 +46,9 @@ class DataFilter(object):
 
     def apply_filters(self, filters, utterances):
         Logger.info('Applying filters:' + str(filters))
-        by_snr = filters.get('then_by_snr', None)
-        by_speaker = filters.get('then_by_speaker', None)
-        by_duration = filters.get('then_by_duration', None)
+        by_snr = filters.get('by_snr', None)
+        by_speaker = filters.get('by_speaker', None)
+        by_duration = filters.get('by_duration', None)
         with_randomness = filters.get('with_randomness', 'false')
         with_fraction = filters.get('with_fraction', 1)
 
