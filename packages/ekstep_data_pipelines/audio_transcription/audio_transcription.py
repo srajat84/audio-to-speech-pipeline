@@ -154,7 +154,7 @@ class AudioTranscription:
         if reason is not None:
             self.handle_error(audio_id, local_clean_path, local_rejected_path, reason)
 
-    def handle_error(self, audio_id, local_clean_path, local_rejected_path):
+    def handle_error(self, audio_id, local_clean_path, local_rejected_path, reason):
         rejected_dir = self.get_local_dir_path(local_rejected_path)
         if not os.path.exists(rejected_dir):
             os.makedirs(rejected_dir)
