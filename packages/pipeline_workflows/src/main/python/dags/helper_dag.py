@@ -219,7 +219,7 @@ def get_require_audio_id(source, stt_source_path, batch_count):
 
         if batch_count > 0:
             if ".wav" in blob.name:
-                audio_id = blob.name.split('/')[-3]
+                audio_id = blob.name.split('/')[-2]
 
                 if audio_id not in audio_id_list:
                     audio_id_list.add(audio_id)

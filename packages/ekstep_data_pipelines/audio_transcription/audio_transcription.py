@@ -45,7 +45,7 @@ class AudioTranscription:
         for audio_id in audio_ids:
             try:
                 LOGGER.info('Generating transcription for audio_id:' + str(audio_id))
-                remote_dir_path_for_given_audio_id = f'{remote_path_of_dir}/{source}/{audio_id}/clean/'
+                remote_dir_path_for_given_audio_id = f'{remote_path_of_dir}/{source}/{audio_id}/'
 
                 remote_stt_output_path = self.audio_transcription_config.get(
                     'remote_stt_audio_file_path')
