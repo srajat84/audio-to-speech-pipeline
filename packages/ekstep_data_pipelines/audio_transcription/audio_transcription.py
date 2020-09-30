@@ -24,7 +24,6 @@ class AudioTranscription:
         self.data_processor = data_processor
         self.gcs_instance = gcs_instance
         self.transcription_clients = audio_commons.get('transcription_clients')
-        self.catalogue_dao = catalogue_dao
         self.audio_transcription_config = None
 
     def process(self, **kwargs):
@@ -46,10 +45,6 @@ class AudioTranscription:
         for audio_id in audio_ids:
             try:
                 LOGGER.info('Generating transcription for audio_id:' + str(audio_id))
-                utterances = self.catalogue_dao.get_utterances(audio_id)
-                if len(utterances) <= 0:
-                    LOGGER.info('No utterances found for audio_id:' + audio_id)
-                    continue
                 remote_dir_path_for_given_audio_id = f'{remote_path_of_dir}/{source}/{audio_id}/clean/'
 
                 remote_stt_output_path = self.audio_transcription_config.get(
@@ -61,19 +56,22 @@ class AudioTranscription:
                 all_path = self.gcs_instance.list_blobs_in_a_path(remote_dir_path_for_given_audio_id)
 
                 local_clean_dir_path, local_rejected_dir_path = self.generate_transcription_for_all_utterenaces(audio_id, all_path, language,
-                                                                                 transcription_client, utterances, should_skip_rejected)
-                LOGGER.info('updating catalogue with updated utterances')
-                self.catalogue_dao.update_utterances(audio_id, utterances)
-
+                                                                                 transcription_client, should_skip_rejected)
                 LOGGER.info(f'Uploading local generated files from {local_clean_dir_path} to {remote_stt_output_path}')
                 if os.path.exists(local_clean_dir_path):
                     self.move_to_gcs(local_clean_dir_path, remote_stt_output_path + "/clean")
+                    LOGGER.info(f'removing clean wav temp folder: {local_clean_dir_path}')
+                    command = f'rm -r {local_clean_dir_path}'
+                    os.system(command)
                 else:
                     LOGGER.info('No clean files found')
 
                 LOGGER.info(f'Uploading local generated files from {local_rejected_dir_path} to {remote_stt_output_path}')
                 if os.path.exists(local_rejected_dir_path):
                     self.move_to_gcs(local_rejected_dir_path, remote_stt_output_path + "/rejected")
+                    LOGGER.info(f'removing rejected wav temp folder: {local_clean_dir_path}')
+                    command = f'rm -r {local_rejected_dir_path}'
+                    os.system(command)
                 else:
                     LOGGER.info('No rejected files found')
 
@@ -102,40 +100,20 @@ class AudioTranscription:
         with open(output_file_path, "w") as f:
             f.write(transcription)
 
-    def generate_transcription_for_all_utterenaces(self, audio_id, all_path, language, transcription_client, utterances, should_skip_rejected):
+    def generate_transcription_for_all_utterenaces(self, audio_id, all_path, language, transcription_client, should_skip_rejected):
         LOGGER.info("*** generate_transcription_for_all_utterenaces **")
         local_clean_path = ''
         local_rejected_path = ''
         for file_path in all_path:
-            file_name = get_file_name(file_path.name)
             local_clean_path = f"/tmp/{file_path.name}"
             local_rejected_path = local_clean_path.replace('clean', 'rejected')
-            utterance_metadata = self.catalogue_dao.find_utterance_by_name(utterances, file_name)
-
-            if utterance_metadata is None:
-                LOGGER.info('No utterance found for file_name: ' + file_name)
-                continue
-            if utterance_metadata['status'] == 'Rejected':
-                if should_skip_rejected:
-                    LOGGER.info('Skipping rejected file_name: ' + file_name)
-                    continue
-                else:
-                    LOGGER.info('Marking rejected file as clean, as this will be transcribed:' + file_name)
-                    utterance_metadata['status'] = 'Clean'
-                    utterance_metadata['reason'] = 'redacted'
-            if float(utterance_metadata['duration']) < 0.5 or float(utterance_metadata['duration']) > 15:
-                LOGGER.error('skipping audio file as duration > 15 or < .5')
-                continue
-
-            LOGGER.info('Generating transcription for utterance:' + str(utterance_metadata))
-
             self.generate_transcription_and_sanitize(audio_id, local_clean_path, local_rejected_path, file_path, language,
-                                                     transcription_client, utterance_metadata)
+                                                     transcription_client)
 
         return self.get_local_dir_path(local_clean_path), self.get_local_dir_path(local_rejected_path)
 
     def generate_transcription_and_sanitize(self, audio_id, local_clean_path, local_rejected_path, file_path, language,
-                                            transcription_client, utterance_metadata):
+                                            transcription_client):
         if ".wav" not in file_path.name:
             return
 
@@ -174,12 +152,9 @@ class AudioTranscription:
             reason = ex.args
 
         if reason is not None:
-            self.handle_error(audio_id, local_clean_path, local_rejected_path, utterance_metadata, reason)
+            self.handle_error(audio_id, local_clean_path, local_rejected_path, reason)
 
-    def handle_error(self, audio_id, local_clean_path, local_rejected_path, utterance_metadata, reason):
-        utterance_metadata['status'] = 'Rejected'
-        utterance_metadata['reason'] = reason
-        self.catalogue_dao.update_utterance_status(audio_id, utterance_metadata)
+    def handle_error(self, audio_id, local_clean_path, local_rejected_path):
         rejected_dir = self.get_local_dir_path(local_rejected_path)
         if not os.path.exists(rejected_dir):
             os.makedirs(rejected_dir)
