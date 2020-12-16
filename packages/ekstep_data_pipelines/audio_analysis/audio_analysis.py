@@ -60,9 +60,11 @@ class AudioAnalysis(BaseProcessor):
         min_samples = parameters.get('min_samples', MIN_SAMPLES)
         fit_noise_on_similarity = parameters.get('fit_noise_on_similarity', FIT_NOISE_ON_SIMILARITY)
         npz_destination_path = f'{remote_download_path}/{source}_embed_file.npz'
+        create_embeddings()
         analyse_speakers(embed_file_path, '*.wav', local_audio_download_path, source, self.catalogue_dao,
                          min_cluster_size, partial_set_size, min_samples, fit_noise_on_similarity,
                          self.fs_interface, npz_destination_path)
+        analyse_gender()
 
     def get_full_path(self, source):
         remote_file_path = self.audio_processor_config.get(REMOTE_PROCESSED_FILE_PATH)
